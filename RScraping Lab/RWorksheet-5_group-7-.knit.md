@@ -4,9 +4,7 @@ output: pdf_document
 date: "2023-12-01"
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+
 
 ## R Markdown
 
@@ -14,8 +12,29 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-```{r scraping}
+
+```r
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 library(polite)
 library(xml2)
 library(magrittr)
@@ -31,7 +50,13 @@ library(httr)
 #m5 - Better Call Saul
 
 polite::use_manners(save_as = "polite_scrape.R")
+```
 
+```
+## v Setting active project to 'F:/RScraping'
+```
+
+```r
 url_m1 <- 'https://www.imdb.com/title/tt0903747/reviews?spoiler=hide&sort=curated&dir=desc&ratingFilter=0'
 url_m2 <- 'https://www.imdb.com/title/tt0944947/reviews?spoiler=hide&sort=curated&dir=desc&ratingFilter=0'
 url_m3 <- 'https://www.imdb.com/title/tt11126994/reviews?spoiler=hide&sort=curated&dir=desc&ratingFilter=0'
@@ -52,11 +77,65 @@ session_m5 <- bow(url_m5,
                   user_agent = "Educational")
 
 session_m1
-session_m2
-session_m3
-session_m4
-session_m5
+```
 
+```
+## <polite session> https://www.imdb.com/title/tt0903747/reviews?spoiler=hide&sort=curated&dir=desc&ratingFilter=0
+##     User-agent: Educational
+##     robots.txt: 34 rules are defined for 2 bots
+##    Crawl delay: 5 sec
+##   The path is scrapable for this user-agent
+```
+
+```r
+session_m2
+```
+
+```
+## <polite session> https://www.imdb.com/title/tt0944947/reviews?spoiler=hide&sort=curated&dir=desc&ratingFilter=0
+##     User-agent: Educational
+##     robots.txt: 34 rules are defined for 2 bots
+##    Crawl delay: 5 sec
+##   The path is scrapable for this user-agent
+```
+
+```r
+session_m3
+```
+
+```
+## <polite session> https://www.imdb.com/title/tt11126994/reviews?spoiler=hide&sort=curated&dir=desc&ratingFilter=0
+##     User-agent: Educational
+##     robots.txt: 34 rules are defined for 2 bots
+##    Crawl delay: 5 sec
+##   The path is scrapable for this user-agent
+```
+
+```r
+session_m4
+```
+
+```
+## <polite session> https://www.imdb.com/title/tt0877057/reviews?spoiler=hide&sort=curated&dir=desc&ratingFilter=0
+##     User-agent: Educational
+##     robots.txt: 34 rules are defined for 2 bots
+##    Crawl delay: 5 sec
+##   The path is scrapable for this user-agent
+```
+
+```r
+session_m5
+```
+
+```
+## <polite session> https://www.imdb.com/title/tt3032476/reviews?spoiler=hide&sort=curated&dir=desc&ratingFilter=0
+##     User-agent: Educational
+##     robots.txt: 34 rules are defined for 2 bots
+##    Crawl delay: 5 sec
+##   The path is scrapable for this user-agent
+```
+
+```r
 reviewerName_m1 <- character(0)
 dateReviewed_m1 <- character(0)
 userRating_m1 <- character(0)
