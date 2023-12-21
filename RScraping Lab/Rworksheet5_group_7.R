@@ -1,45 +1,12 @@
----
-title: "RWorksheet#5"
-output: pdf_document
-date: "2023-12-01"
----
 
 
-
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-
-```r
 library(dplyr)
-```
-
-```
-## 
-## Attaching package: 'dplyr'
-```
-
-```
-## The following objects are masked from 'package:stats':
-## 
-##     filter, lag
-```
-
-```
-## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union
-```
-
-```r
 library(polite)
 library(xml2)
 library(magrittr)
 library(rvest)
 library(httr)
+library(ggplot2)
 
 
 #Movie Guide
@@ -50,18 +17,13 @@ library(httr)
 #m5 - Better Call Saul
 
 polite::use_manners(save_as = "polite_scrape.R")
-```
 
-```
-## v Setting active project to 'F:/RScraping'
-```
-
-```r
 url_m1 <- 'https://www.imdb.com/title/tt0903747/reviews?spoiler=hide&sort=curated&dir=desc&ratingFilter=0'
 url_m2 <- 'https://www.imdb.com/title/tt0944947/reviews?spoiler=hide&sort=curated&dir=desc&ratingFilter=0'
 url_m3 <- 'https://www.imdb.com/title/tt11126994/reviews?spoiler=hide&sort=curated&dir=desc&ratingFilter=0'
 url_m4 <- 'https://www.imdb.com/title/tt0877057/reviews?spoiler=hide&sort=curated&dir=desc&ratingFilter=0'
 url_m5 <- 'https://www.imdb.com/title/tt3032476/reviews?spoiler=hide&sort=curated&dir=desc&ratingFilter=0'
+tvShowDateURL <- 'https://www.imdb.com/chart/toptv/?ref_=nv_tvv_250'
 
 
 
@@ -75,67 +37,16 @@ session_m4 <- bow(url_m4,
                   user_agent = "Educational")
 session_m5 <- bow(url_m5,
                   user_agent = "Educational")
+session_m6 <- bow(tvShowDateURL,
+                  user_agent = "Educational")
 
 session_m1
-```
-
-```
-## <polite session> https://www.imdb.com/title/tt0903747/reviews?spoiler=hide&sort=curated&dir=desc&ratingFilter=0
-##     User-agent: Educational
-##     robots.txt: 34 rules are defined for 2 bots
-##    Crawl delay: 5 sec
-##   The path is scrapable for this user-agent
-```
-
-```r
 session_m2
-```
-
-```
-## <polite session> https://www.imdb.com/title/tt0944947/reviews?spoiler=hide&sort=curated&dir=desc&ratingFilter=0
-##     User-agent: Educational
-##     robots.txt: 34 rules are defined for 2 bots
-##    Crawl delay: 5 sec
-##   The path is scrapable for this user-agent
-```
-
-```r
 session_m3
-```
-
-```
-## <polite session> https://www.imdb.com/title/tt11126994/reviews?spoiler=hide&sort=curated&dir=desc&ratingFilter=0
-##     User-agent: Educational
-##     robots.txt: 34 rules are defined for 2 bots
-##    Crawl delay: 5 sec
-##   The path is scrapable for this user-agent
-```
-
-```r
 session_m4
-```
-
-```
-## <polite session> https://www.imdb.com/title/tt0877057/reviews?spoiler=hide&sort=curated&dir=desc&ratingFilter=0
-##     User-agent: Educational
-##     robots.txt: 34 rules are defined for 2 bots
-##    Crawl delay: 5 sec
-##   The path is scrapable for this user-agent
-```
-
-```r
 session_m5
-```
+session_m6
 
-```
-## <polite session> https://www.imdb.com/title/tt3032476/reviews?spoiler=hide&sort=curated&dir=desc&ratingFilter=0
-##     User-agent: Educational
-##     robots.txt: 34 rules are defined for 2 bots
-##    Crawl delay: 5 sec
-##   The path is scrapable for this user-agent
-```
-
-```r
 reviewerName_m1 <- character(0)
 dateReviewed_m1 <- character(0)
 userRating_m1 <- character(0)
@@ -166,6 +77,9 @@ userRating_m5 <- character(0)
 titleReview_m5 <- character(0)
 textReview_m5 <- character(0)
 
+tvShowTitle <- character(0)
+tvShowDates <- character(0)
+
 
 #Breaking Bad
 tv_m1 <- scrape(session_m1) %>% 
@@ -193,6 +107,8 @@ textReview_m1 <- tv_m1 %>%
 
 DF_m1 <- data.frame(userRating_m1, dateReviewed_m1, reviewerName_m1, titleReview_m1, textReview_m1)
 colnames(DF_m1) <- c("User Rating", "Date Reviewed", "Reviewer Name", "Title Review", "Text Review")
+
+View(DF_m1)
 
 
 #Game of Thrones
@@ -255,6 +171,7 @@ colnames(DF_m3) <- c("User Rating", "Date Reviewed", "Reviewer Name", "Title Rev
 
 View(DF_m3)
 
+
 #Death Note
 
 tv_m4 <- scrape(session_m4) %>% 
@@ -285,6 +202,7 @@ colnames(DF_m4) <- c("User Rating", "Date Reviewed", "Reviewer Name", "Title Rev
 
 View(DF_m4)
 
+
 #Better Call Saul
 
 tv_m5 <- scrape(session_m5) %>% 
@@ -314,5 +232,40 @@ DF_m5 <- data.frame(userRating_m5, dateReviewed_m5, reviewerName_m5, titleReview
 colnames(DF_m5) <- c("User Rating", "Date Reviewed", "Reviewer Name", "Title Review", "Text Review")
 
 View(DF_m5)
-```
+
+#TV Shows Time Series Graph
+
+tvShows <- scrape(session_m6) %>% 
+  html_elements('ul.ipc-metadata-list')
+
+
+tvShowTitle <- tvShows %>%
+  html_nodes('h3.ipc-title__text') %>%
+  html_text()
+
+tvShowDates <- tvShows %>%
+  html_nodes('div.sc-43986a27-7') %>%
+  html_text()
+
+tvShowDates <- substr(tvShowDates, 1, 4)
+tvShowDates
+
+tvShowDF <- data.frame(tvShowTitle,tvShowDates)
+colnames(tvShowDF) <- c("TV Show Title","Year_Released")
+
+
+tvShowDF <- head(tvShowDF,50)
+View(tvShowDF)
+tvShowDF$Year_Released <- substr(tvShowDF$Year_Released, 1, 4)
+
+tvShowDF$Year_Released <- as.numeric(tvShowDF$Year_Released)
+ggplot(tvShowDF, aes(x = Year_Released)) +
+  geom_bar(stat = "count", fill = "blue") +
+  labs(title = "Number of TV Shows Released Each Year",
+       x = "Year Released",
+       y = "Number of TV Shows")
+        scale_x_continuous(breaks = unique(tvShowDF$Year_Released), expand = c(0, 0))
+
+cat("The year(s) that have the most number of TV shows released are year 2011 and year 2014")
+
 

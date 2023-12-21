@@ -1,12 +1,16 @@
 ---
-title: "RWorksheet#5"
+title: "R worksheet5 Group 7"
 output: pdf_document
-date: "2023-12-01"
+date: "2023-12-21"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
 ```
+
+
+
 
 ## R Markdown
 
@@ -14,13 +18,18 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-```{r scraping}
+
+```{r libraries }
 library(dplyr)
 library(polite)
 library(xml2)
 library(magrittr)
 library(rvest)
 library(httr)
+library(ggplot2)
+```
+
+```{r scraping TV show 1}
 
 
 #Movie Guide
@@ -37,6 +46,11 @@ url_m2 <- 'https://www.imdb.com/title/tt0944947/reviews?spoiler=hide&sort=curate
 url_m3 <- 'https://www.imdb.com/title/tt11126994/reviews?spoiler=hide&sort=curated&dir=desc&ratingFilter=0'
 url_m4 <- 'https://www.imdb.com/title/tt0877057/reviews?spoiler=hide&sort=curated&dir=desc&ratingFilter=0'
 url_m5 <- 'https://www.imdb.com/title/tt3032476/reviews?spoiler=hide&sort=curated&dir=desc&ratingFilter=0'
+tvShowDateURL <- 'https://www.imdb.com/chart/toptv/?ref_=nv_tvv_250'
+
+
+
+
 
 
 
@@ -50,12 +64,15 @@ session_m4 <- bow(url_m4,
                   user_agent = "Educational")
 session_m5 <- bow(url_m5,
                   user_agent = "Educational")
+session_m6 <- bow(tvShowDateURL,
+                  user_agent = "Educational")
 
 session_m1
 session_m2
 session_m3
 session_m4
 session_m5
+session_m6
 
 reviewerName_m1 <- character(0)
 dateReviewed_m1 <- character(0)
@@ -87,6 +104,8 @@ userRating_m5 <- character(0)
 titleReview_m5 <- character(0)
 textReview_m5 <- character(0)
 
+tvShowTitle <- character(0)
+tvShowDates <- character(0)
 
 #Breaking Bad
 tv_m1 <- scrape(session_m1) %>% 
@@ -115,7 +134,10 @@ textReview_m1 <- tv_m1 %>%
 DF_m1 <- data.frame(userRating_m1, dateReviewed_m1, reviewerName_m1, titleReview_m1, textReview_m1)
 colnames(DF_m1) <- c("User Rating", "Date Reviewed", "Reviewer Name", "Title Review", "Text Review")
 
+View(DF_m1)
+```
 
+```{r TV show 2}
 #Game of Thrones
 
 tv_m2 <- scrape(session_m2) %>% 
@@ -145,8 +167,9 @@ textReview_m2 <- tv_m2 %>%
 DF_m2 <- data.frame(userRating_m2, dateReviewed_m2, reviewerName_m2, titleReview_m2, textReview_m2)
 colnames(DF_m2) <- c("User Rating", "Date Reviewed", "Reviewer Name", "Title Review", "Text Review")
 View(DF_m2)
+```
 
-
+```{r TV Show 3}
 #Arcane 
 tv_m3 <- scrape(session_m3) %>% 
   html_elements('div.lister-item')
@@ -175,7 +198,9 @@ DF_m3 <- data.frame(userRating_m3, dateReviewed_m3, reviewerName_m3, titleReview
 colnames(DF_m3) <- c("User Rating", "Date Reviewed", "Reviewer Name", "Title Review", "Text Review")
 
 View(DF_m3)
+```
 
+```{r Tv Show 4}
 #Death Note
 
 tv_m4 <- scrape(session_m4) %>% 
@@ -205,7 +230,9 @@ DF_m4 <- data.frame(userRating_m4, dateReviewed_m4, reviewerName_m4, titleReview
 colnames(DF_m4) <- c("User Rating", "Date Reviewed", "Reviewer Name", "Title Review", "Text Review")
 
 View(DF_m4)
+```
 
+```{r TV show 5}
 #Better Call Saul
 
 tv_m5 <- scrape(session_m5) %>% 
@@ -236,4 +263,43 @@ colnames(DF_m5) <- c("User Rating", "Date Reviewed", "Reviewer Name", "Title Rev
 
 View(DF_m5)
 ```
+
+```{r time series TV show Scrape}
+
+tvShows <- scrape(session_m6) %>% 
+  html_elements('ul.ipc-metadata-list')
+
+
+tvShowTitle <- tvShows %>%
+  html_nodes('h3.ipc-title__text') %>%
+  html_text()
+
+tvShowDates <- tvShows %>%
+  html_nodes('div.sc-43986a27-7') %>%
+  html_text()
+  
+tvShowDates <- substr(tvShowDates, 1, 4)
+tvShowDates
+
+tvShowDF <- data.frame(tvShowTitle,tvShowDates)
+colnames(tvShowDF) <- c("TV Show Title","Year_Released")
+
+
+tvShowDF <- head(tvShowDF,50)
+View(tvShowDF)
+tvShowDF$Year_Released <- substr(tvShowDF$Year_Released, 1, 4)
+
+```
+
+```{r time series graph}
+tvShowDF$Year_Released <- as.numeric(tvShowDF$Year_Released)
+ggplot(tvShowDF, aes(x = Year_Released)) +
+  geom_bar(stat = "count", fill = "blue") +
+  labs(title = "Number of TV Shows Released Each Year",
+       x = "Year Released",
+       y = "Number of TV Shows")
+cat("The year(s) that have the most number of TV shows released are year 2011 and year 2014")
+```
+
+
 
