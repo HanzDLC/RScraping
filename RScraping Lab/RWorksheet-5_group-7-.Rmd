@@ -372,5 +372,91 @@ ggplot(tvShowDF, aes(x = Year_Released)) +
 cat("The year(s) that have the most number of TV shows released are year 2011 and year 2014")
 ```
 
+```{r amazon scrape}
+url1 <- 'https://www.amazon.com/Memory-Stick-Portable-Thumb-Keychain/dp/B0CDKS2TGW/ref=sr_1_1_sspa?qid=1703249348&s=computers-intl-ship&sr=1-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGZfYnJvd3Nl&psc=1'
+url2 <- 'https://www.amazon.com/GTIOT-USB-Computer-Portable-High-Speed/dp/B0CPXYBK1V/ref=sr_1_2_sspa?qid=1703250778&s=computers-intl-ship&sr=1-2-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGZfYnJvd3Nl&psc=1'
+url3 <- 'https://www.amazon.com/SAMSUNG-Internal-Expansion-MZ-V9P2T0B-AM/dp/B0BHJJ9Y77/ref=sr_1_4?qid=1703250778&s=computers-intl-ship&sr=1-4'
+session1 <- bow(url1,
+               user_agent = "Educational")
+session2 <- bow(url2,
+                user_agent = "Educational")
+session3 <- bow(url3,
+                user_agent = "Educational")
+session1
+session2
+session3
 
 
+amazon1 <- scrape(session1) %>% 
+  html_elements('div.cm-cr-dp-review-list')
+
+amazonPrice1 <- scrape(session1) %>%
+  html_node('span.a-offscreen') %>%
+  html_text()
+
+amazonDescription1 <- scrape(session1) %>%
+  html_node('div.a-spacing-medium') %>%
+  html_text()
+
+
+amazonRatings1 <- scrape(session1) %>%
+  html_node('span.a-icon-alt') %>%
+  html_text()
+
+
+amazonReviews1 <- scrape(session1) %>%
+  html_node('span.review-text') %>%
+  html_text()
+
+
+##Number 2
+
+
+amazonPrice2 <- scrape(session2) %>%
+  html_node('span.a-offscreen') %>%
+  html_text()
+
+amazonDescription2 <- scrape(session2) %>%
+  html_node('div.a-spacing-medium') %>%
+  html_text()
+
+amazonRatings2 <- scrape(session2) %>%
+  html_node('span.a-icon-alt') %>%
+  html_text()
+
+
+amazonReviews2 <- scrape(session2) %>%
+  html_node('span.review-text') %>%
+  html_text()
+
+
+#Number 3
+
+
+amazonPrice3 <- scrape(session3) %>%
+  html_node('span.a-offscreen') %>%
+  html_text()
+
+amazonDescription3 <- scrape(session3) %>%
+  html_node('div.a-spacing-medium') %>%
+  html_text()
+
+amazonRatings3 <- scrape(session3) %>%
+  html_node('span.a-icon-alt') %>%
+  html_text()
+
+
+amazonReviews3 <- scrape(session3) %>%
+  html_node('span.review-text') %>%
+  html_text()
+
+
+Price <- c(amazonPrice1, amazonPrice2, amazonPrice3)
+Description <- c(amazonDescription1, amazonDescription2, amazonDescription3)
+Ratings <- c(amazonRatings1, amazonRatings2, amazonRatings3)
+Reviews <- c(amazonReviews1, amazonReviews2, amazonReviews3)
+
+
+amazonDF <- data.frame(Price, Description, Ratings, Reviews)
+View(amazonDF)
+```
